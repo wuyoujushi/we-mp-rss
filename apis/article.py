@@ -435,6 +435,7 @@ async def get_articles(
     status: str = Query(None, description="文章状态，多个用逗号分隔，如: updating,deleted"),
     search: str = Query(None),
     mp_id: str = Query(None),
+    tag_id: str = Query(None, description="标签ID，用于筛选特定标签关联的文章"),
     only_favorite: bool = Query(False),
     has_content: bool = Query(None, description="是否有正文: true=有, false=无, 不传=全部"),
     current_user: dict = Depends(get_current_user_or_ak)
@@ -469,6 +470,19 @@ async def get_articles(
             query = query.filter(Article.status != DATA_STATUS.DELETED)
         if mp_id:
             query = query.filter(Article.mp_id == mp_id)
+        # 支持 tag_id 参数：通过标签ID筛选文章
+        if tag_id:
+            from core.models.tags import Tags
+            import json
+            tag = session.query(Tags).filter(Tags.id == tag_id, Tags.status == 1).first()
+            if tag and tag.mps_id:
+                try:
+                    mps_data = json.loads(tag.mps_id)
+                    mps_ids = [str(mp['id']) for mp in mps_data] if isinstance(mps_data, list) else []
+                    if mps_ids:
+                        query = query.filter(Article.mp_id.in_(mps_ids))
+                except (json.JSONDecodeError, TypeError):
+                    pass
         if only_favorite:
             query = query.filter(Article.is_favorite == 1)
         # 支持 has_content 参数：true=有正文，false=无正文，None=不筛选

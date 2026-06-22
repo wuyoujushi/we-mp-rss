@@ -90,6 +90,23 @@
           </div>
         </a-card>
       </a-layout-sider>
+        <a-card :bordered="false" title="标签筛选"
+          :headStyle="{ padding: "12px 16px", borderBottom: "1px solid #eee", background: "#fff", zIndex: 1 }">
+          <div v-if="tags.length > 0" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 250px; overflow-y: auto;">
+            <a-tag
+              v-for="tag in tags"
+              :key="tag.id"
+              :color="activeTagId === tag.id ? "arcoblue" : "gray"
+              checkable
+              :checked="activeTagId === tag.id"
+              @click="handleTagClick(tag.id)"
+              style="cursor: pointer;"
+            >
+              {{ tag.name }}
+            </a-tag>
+          </div>
+          <a-empty v-else description="暂无标签" />
+        </a-card>
 
       <a-layout-content style="padding: 20px;">
         <a-page-header :title="activeFeed ? activeFeed.name : '全部'" :subtitle="'管理您的公众号订阅内容'" :show-back="false">
@@ -351,6 +368,7 @@ import { ref, onMounted, h, nextTick, watch, computed, resolveComponent } from '
 import axios from 'axios'
 import { IconApps, IconAtt, IconDelete, IconEdit, IconEye, IconRefresh, IconScan, IconWeiboCircleFill, IconWifi, IconCode, IconCheck, IconClose, IconStop, IconPlayArrow, IconCopy, IconPlus, IconDown, IconExport, IconImport, IconShareExternal, IconStar, IconStarFill, IconLink, IconSettings } from '@arco-design/web-vue/es/icon'
 import { getArticles, deleteArticle as deleteArticleApi, ClearArticle, ClearDuplicateArticle, getArticleDetail, getRefreshArticleTaskStatus, refreshArticle as refreshArticleApi, toggleArticleFavoriteStatus, toggleArticleReadStatus, cleanOldArticles } from '@/api/article'
+import { listTags } from '@/api/tagManagement'
 import { ExportOPML, ExportMPS, ImportMPS } from '@/api/export'
 import ExportModal from '@/components/ExportModal.vue'
 import { addFeaturedArticle, getFeaturedArticleTaskStatus, getSubscriptions, UpdateMps, toggleMpStatus as toggleMpStatusApi } from '@/api/subscription'
@@ -369,6 +387,29 @@ const loading = ref(false)
 const mpList = ref([])
 const mpLoading = ref(false)
 const activeMpId = ref('')
+
+const tags = ref<{id: string, name: string, status: number}[]>([])
+const activeTagId = ref('')
+
+const fetchTags = async () => {
+  try {
+    const res = await listTags({ offset: 0, limit: 100 })
+    tags.value = res.list || []
+  } catch (error) {
+    console.error('获取标签列表失败:', error)
+  }
+}
+
+const handleTagClick = (tagId: string) => {
+  if (activeTagId.value === tagId) {
+    activeTagId.value = ''
+  } else {
+    activeTagId.value = tagId
+  }
+  activeMpId.value = ''
+  pagination.value.current = 1
+  fetchArticles()
+}
 const exportModal = ref()
 const selectedRowKeys = ref([])
 const mpPagination = ref({
@@ -792,6 +833,7 @@ const handleAddFeaturedArticle = async () => {
 
 const handleMpClick = (mpId: string) => {
   activeMpId.value = mpId
+  activeTagId.value = ''
   pagination.value.current = 1
   activeFeed.value = mpList.value.find(item => item.id === activeMpId.value)
   console.log(activeFeed.value)
@@ -808,6 +850,7 @@ const fetchArticles = async () => {
       pageSize: pagination.value.pageSize,
       search: searchText.value,
       mp_id: activeMpId.value
+      tag_id: activeTagId.value
     }
 
     // 根据筛选类型添加不同的参数（单选）
@@ -1253,6 +1296,7 @@ onMounted(() => {
   console.log('组件挂载，开始获取数据')
   initIssourceUrl() // 初始化 issourceUrl 值
   fetchMpList().then(() => {
+    fetchTags()
     console.log('公众号列表获取完成')
     fetchArticles()
   }).catch(err => {

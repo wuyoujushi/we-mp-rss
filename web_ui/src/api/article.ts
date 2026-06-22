@@ -41,6 +41,7 @@ export interface ArticleListParams {
   search?: string
   status?: number
   mp_id?: string
+tag_id?: string
   has_content?: boolean
   only_favorite?: boolean
 }
@@ -68,6 +69,7 @@ export const getArticles = (params: ArticleListParams) => {
     search: params.search,
     status: params.status,
     mp_id: params.mp_id,
+tag_id: params.tag_id,
     has_content: params.has_content,
     only_favorite: params.only_favorite
   }
@@ -167,7 +169,8 @@ export const ClearDuplicateArticle = (id?: number | string) => {
  */
 export interface CleanOldArticlesParams {
   days?: number  // 清理多少天前的文章，默认3天
-  mp_id?: string  // 公众号ID，不指定则清理所有公众号
+  mp_id?: string
+tag_id?: string  // 公众号ID，不指定则清理所有公众号
   dry_run?: boolean  // 是否只预览不实际删除
 }
 
@@ -192,6 +195,7 @@ export interface CleanOldArticlesResult {
     dry_run?: boolean
     days?: number
     mp_id?: string
+tag_id?: string
     physical_delete?: boolean
   }
 }
@@ -206,6 +210,7 @@ export const cleanOldArticles = (params: CleanOldArticlesParams = {}) => {
     params: {
       days: params.days || 3,
       mp_id: params.mp_id,
+tag_id: params.tag_id,
       dry_run: params.dry_run || false
     }
   })
