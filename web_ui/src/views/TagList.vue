@@ -183,6 +183,9 @@ onMounted(() => {
                 <a-link type="primary" target="_blank" :href="`/feed/tag/${record.id}.rss`">
                   订阅
                 </a-link>
+                <a-button type="text" @click="$router.push({ path: '/', query: { tagId: record.id } })">
+                  阅读
+                </a-button>
                 <a-button type="text" @click="$router.push(`/tags/edit/${record.id}`)">
                   编辑
                 </a-button>
@@ -215,6 +218,9 @@ onMounted(() => {
                 创建时间: {{ item.created_at }}
               </template>
             </a-list-item-meta>
+            <a-button type="text" size="small" @click="$router.push({ path: '/', query: { tagId: item.id } })">
+              阅读
+            </a-button>
             <a-space>
               <a-button type="text" size="small" @click="$router.push(`/tags/edit/${item.id}`)">
                 编辑
