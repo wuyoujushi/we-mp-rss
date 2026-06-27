@@ -39,6 +39,24 @@
                 <a-radio value="disabled" style="flex: 1; text-align: center;">停用</a-radio>
               </a-radio-group>
             </div>
+            <div style="margin-bottom: 8px; padding: 0 8px;">
+              <div style="font-size: 12px; color: var(--color-text-3); margin-bottom: 4px;">标签筛选</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                <a-tag
+                  v-for="tag in tags"
+                  :key="tag.id"
+                  :color="activeTagId === tag.id ? 'arcoblue' : 'gray'"
+                  checkable
+                  :checked="activeTagId === tag.id"
+                  @click="handleTagClick(tag.id)"
+                  style="cursor: pointer;"
+                >
+                  {{ tag.name }}
+                </a-tag>
+                <span v-if="tags.length === 0" style="font-size: 12px; color: var(--color-text-3);">暂无标签</span>
+              </div>
+            </div>
+
             <a-list :data="mpList" :loading="mpLoading" bordered>
               <template #item="{ item, index }">
                 <a-popover trigger="hover" position="right" :content-style="{ padding: '12px', minWidth: '200px', maxWidth: '300px' }">
@@ -90,23 +108,7 @@
           </div>
         </a-card>
       </a-layout-sider>
-        <a-card :bordered="false" title="标签筛选"
-          :headStyle="{ padding: "12px 16px", borderBottom: "1px solid #eee", background: "#fff", zIndex: 1 }">
-          <div v-if="tags.length > 0" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 250px; overflow-y: auto;">
-            <a-tag
-              v-for="tag in tags"
-              :key="tag.id"
-              :color="activeTagId === tag.id ? "arcoblue" : "gray"
-              checkable
-              :checked="activeTagId === tag.id"
-              @click="handleTagClick(tag.id)"
-              style="cursor: pointer;"
-            >
-              {{ tag.name }}
-            </a-tag>
-          </div>
-          <a-empty v-else description="暂无标签" />
-        </a-card>
+        
 
       <a-layout-content style="padding: 20px;">
         <a-page-header :title="activeFeed ? activeFeed.name : '全部'" :subtitle="'管理您的公众号订阅内容'" :show-back="false">
@@ -849,7 +851,7 @@ const fetchArticles = async () => {
       page: pagination.value.current - 1,
       pageSize: pagination.value.pageSize,
       search: searchText.value,
-      mp_id: activeMpId.value
+      mp_id: activeMpId.value,
       tag_id: activeTagId.value
     }
 
