@@ -1302,12 +1302,20 @@ onMounted(() => {
 
   // 检查 URL 参数是否有 tagId
   const tagIdFromUrl = route.query.tagId as string
+  
   if (tagIdFromUrl) {
     activeTagId.value = tagIdFromUrl
   }
- // 初始化 issourceUrl 值
+  
+  // 初始化 issourceUrl 值
   fetchMpList().then(() => {
-    fetchTags()
+    fetchTags().then(() => {
+      // 如果 URL 中有 tagId，更新页面标题
+      if (tagIdFromUrl) {
+        const tag = tags.value.find(t => t.id === tagIdFromUrl)
+        activeFeed.value = tag ? { id: tag.id, name: tag.name, mp_name: tag.name } : { id: tagIdFromUrl, name: '标签文章', mp_name: '' }
+      }
+    })
     console.log('公众号列表获取完成')
     fetchArticles()
   }).catch(err => {
