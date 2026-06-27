@@ -367,6 +367,7 @@
 import { Avatar } from '@/utils/constants'
 import { translatePage, setCurrentLanguage } from '@/utils/translate';
 import { ref, onMounted, h, nextTick, watch, computed, resolveComponent } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { IconApps, IconAtt, IconDelete, IconEdit, IconEye, IconRefresh, IconScan, IconWeiboCircleFill, IconWifi, IconCode, IconCheck, IconClose, IconStop, IconPlayArrow, IconCopy, IconPlus, IconDown, IconExport, IconImport, IconShareExternal, IconStar, IconStarFill, IconLink, IconSettings } from '@arco-design/web-vue/es/icon'
 import { getArticles, deleteArticle as deleteArticleApi, ClearArticle, ClearDuplicateArticle, getArticleDetail, getRefreshArticleTaskStatus, refreshArticle as refreshArticleApi, toggleArticleFavoriteStatus, toggleArticleReadStatus, cleanOldArticles } from '@/api/article'
@@ -386,6 +387,7 @@ const articles = ref([])
 const FEATURED_MP_ID = 'MP_WXS_FEATURED_ARTICLES'
 const FEATURED_MP_NAME = '精选文章'
 const loading = ref(false)
+const route = useRoute()
 const mpList = ref([])
 const mpLoading = ref(false)
 const activeMpId = ref('')
@@ -1296,7 +1298,14 @@ const handleExportShow = async () => {
 
 onMounted(() => {
   console.log('组件挂载，开始获取数据')
-  initIssourceUrl() // 初始化 issourceUrl 值
+  initIssourceUrl()
+
+  // 检查 URL 参数是否有 tagId
+  const tagIdFromUrl = route.query.tagId as string
+  if (tagIdFromUrl) {
+    activeTagId.value = tagIdFromUrl
+  }
+ // 初始化 issourceUrl 值
   fetchMpList().then(() => {
     fetchTags()
     console.log('公众号列表获取完成')
