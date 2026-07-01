@@ -9,7 +9,7 @@
 
 Quick Start
 ```
-docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  ghcr.io/rachelos/we-mp-rss:latest
+docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  ghcr.io/wuyoujushi/we-mp-rss:latest
 ```
 Visit http://<your-ip>:8001/ to get started
 
@@ -25,11 +25,11 @@ docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  ghcr.io/wuyou
 
 # Official Image
 ```
-docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  rachelos/we-mp-rss:latest
+docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  wuyoujushi/we-mp-rss:latest
 ```
 # Proxy Mirror for Faster Access (Faster access in China)
 ```
-docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  docker.1ms.run/rachelos/we-mp-rss:latest  
+docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  docker.1ms.run/wuyoujushi/we-mp-rss:latest  
 ```
 
 # Special Thanks (In no particular order)
