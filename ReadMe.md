@@ -20,7 +20,7 @@ docker stop we-mp-rss
 docker rm we-mp-rss
 docker pull ghcr.io/wuyoujushi/we-mp-rss:latest
 # If you added other parameters, please modify accordingly
-docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  ghcr.io/rachelos/we-mp-rss:latest
+docker run -d  --name we-mp-rss  -p 8001:8001 -v ./data:/app/data  ghcr.io/wuyoujushi/we-mp-rss:latest
 ```
 
 # Official Image
